@@ -1,0 +1,226 @@
+<div class="dashboard-container">
+  <div class="header">
+    <h1>Construction Projects Dashboard</h1>
+    <div class="header-actions">
+      <a routerLink="/settings" class="settings-btn">
+        <i class="fas fa-cog"></i>
+        <span>Settings</span>
+      </a>
+      <button class="add-project-btn" (click)="showAddProject = true">
+        <i class="fas fa-plus"></i>
+        Add New Project
+      </button>
+      <button class="logout-btn" (click)="logout()">
+        <i class="fas fa-sign-out-alt"></i>
+        Logout
+      </button>
+    </div>
+  </div>
+
+  <div class="dashboard-tabs">
+    <div class="tab-buttons">
+      <button 
+        [class.active]="activeTab === 'all'" 
+        (click)="activeTab = 'all'"
+      >
+        <i class="fas fa-th-large"></i>
+        All Projects
+      </button>
+      <button 
+        [class.active]="activeTab === 'in-progress'" 
+        (click)="activeTab = 'in-progress'"
+      >
+        <i class="fas fa-spinner"></i>
+        In Progress
+      </button>
+      <button 
+        [class.active]="activeTab === 'completed'" 
+        (click)="activeTab = 'completed'"
+      >
+        <i class="fas fa-check-circle"></i>
+        Completed
+      </button>
+      <button 
+        [class.active]="activeTab === 'on-hold'" 
+        (click)="activeTab = 'on-hold'"
+      >
+        <i class="fas fa-pause-circle"></i>
+        On Hold
+      </button>
+    </div>
+  </div>
+
+  <div class="dashboard-stats">
+    <div class="stat-card">
+      <div class="stat-icon in-progress">
+        <i class="fas fa-spinner"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-value">{{ getProjectsByStatus('In Progress').length }}</span>
+        <span class="stat-label">In Progress</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon completed">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-value">{{ getProjectsByStatus('Completed').length }}</span>
+        <span class="stat-label">Completed</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon on-hold">
+        <i class="fas fa-pause-circle"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-value">{{ getProjectsByStatus('On Hold').length }}</span>
+        <span class="stat-label">On Hold</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon total">
+        <i class="fas fa-project-diagram"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-value">{{ projects.length }}</span>
+        <span class="stat-label">Total Projects</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="projects-grid">
+    <div *ngFor="let project of getFilteredProjects()" class="project-card" (click)="viewProjectDetails(project.id)">
+      <div class="project-header">
+        <h2>{{ project.name }}</h2>
+        <div class="status-badge" [class]="project.status.toLowerCase().replace(' ', '-')">
+          {{ project.status }}
+        </div>
+      </div>
+      <p class="project-description">{{ project.description }}</p>
+      <div class="project-info">
+        <div class="info-item">
+          <i class="fas fa-map-marker-alt"></i>
+          <span>{{ project.location }}</span>
+        </div>
+        <div class="info-item">
+          <i class="fas fa-dollar-sign"></i>
+          <span>${{ project.budget | number }}</span>
+        </div>
+        <div class="info-item">
+          <i class="fas fa-calendar"></i>
+          <span>{{ project.startDate | date }}</span>
+        </div>
+      </div>
+      <div class="materials-summary">
+        <h3>Recent Materials</h3>
+        <ul>
+          <li *ngFor="let material of project.materials.slice(0, 3)">
+            {{ material.quantity }} {{ material.unit }} of {{ material.type }}
+          </li>
+        </ul>
+      </div>
+      <div class="project-footer">
+        <button class="view-details-btn">
+          View Details
+          <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add New Project Dialog -->
+  <div class="add-project-dialog" *ngIf="showAddProject">
+    <div class="dialog-content">
+      <h2>Create New Project</h2>
+      <form (ngSubmit)="createProject()" #projectForm="ngForm">
+        <div class="form-group">
+          <label for="name">Project Name</label>
+          <input 
+            id="name" 
+            type="text" 
+            name="name"
+            [(ngModel)]="newProject.name" 
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea 
+            id="description" 
+            name="description"
+            [(ngModel)]="newProject.description" 
+            required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="location">Location</label>
+          <input 
+            id="location" 
+            type="text" 
+            name="location"
+            [(ngModel)]="newProject.location" 
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="budget">Budget</label>
+          <input 
+            id="budget" 
+            type="number" 
+            name="budget"
+            [(ngModel)]="newProject.budget" 
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="startDate">Start Date</label>
+          <input 
+            id="startDate" 
+            type="date" 
+            name="startDate"
+            [(ngModel)]="newProject.startDate" 
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="endDate">End Date</label>
+          <input 
+            id="endDate" 
+            type="date" 
+            name="endDate"
+            [(ngModel)]="newProject.endDate" 
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="status">Status</label>
+          <select 
+            id="status" 
+            name="status"
+            [(ngModel)]="newProject.status" 
+            required>
+            <option value="In Progress">In Progress</option>
+            <option value="Completed">Completed</option>
+            <option value="On Hold">On Hold</option>
+          </select>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="cancel-btn" (click)="showAddProject = false">
+            <i class="fas fa-times"></i>
+            Cancel
+          </button>
+          <button 
+            type="submit" 
+            class="submit-btn"
+            [disabled]="!projectForm.valid"
+          >
+            <i class="fas fa-check"></i>
+            Create Project
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

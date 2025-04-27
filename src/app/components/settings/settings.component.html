@@ -1,0 +1,147 @@
+<div class="settings-container">
+  <div class="settings-header">
+    <h1>Account Settings</h1>
+    <a routerLink="/dashboard" class="back-btn">
+      <i class="fas fa-arrow-left"></i>
+      Back to Dashboard
+    </a>
+  </div>
+
+  <div class="settings-content">
+    <div class="settings-card">
+      <h2>Profile Information</h2>
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <input 
+          id="name" 
+          type="text" 
+          [(ngModel)]="settings.name" 
+          placeholder="Enter your full name"
+        >
+      </div>
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input 
+          id="email" 
+          type="email" 
+          [(ngModel)]="settings.email" 
+          placeholder="Enter your email address"
+        >
+      </div>
+      <div class="form-group">
+        <label for="phone">Phone Number</label>
+        <input 
+          id="phone" 
+          type="tel" 
+          [(ngModel)]="settings.phone" 
+          placeholder="Enter your phone number"
+        >
+      </div>
+      <div class="form-group">
+        <label for="company">Company</label>
+        <input 
+          id="company" 
+          type="text" 
+          [(ngModel)]="settings.company" 
+          placeholder="Enter your company name"
+        >
+      </div>
+    </div>
+
+    <div class="settings-card">
+      <h2>Preferences</h2>
+      <div class="form-group">
+        <label>Theme</label>
+        <div class="radio-group">
+          <label class="radio-label">
+            <input 
+              type="radio" 
+              [(ngModel)]="settings.theme" 
+              value="light"
+            >
+            <span>Light</span>
+          </label>
+          <label class="radio-label">
+            <input 
+              type="radio" 
+              [(ngModel)]="settings.theme" 
+              value="dark"
+            >
+            <span>Dark</span>
+          </label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Notifications</label>
+        <div class="checkbox-group">
+          <label class="checkbox-label">
+            <input 
+              type="checkbox" 
+              [(ngModel)]="settings.notifications.email"
+            >
+            <span>Email Notifications</span>
+          </label>
+          <label class="checkbox-label">
+            <input 
+              type="checkbox" 
+              [(ngModel)]="settings.notifications.sms"
+            >
+            <span>SMS Notifications</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-card">
+      <h2>Security</h2>
+      <div class="form-group">
+        <label for="current-password">Current Password</label>
+        <input 
+          id="current-password" 
+          type="password" 
+          placeholder="Enter your current password"
+        >
+      </div>
+      <div class="form-group">
+        <label for="new-password">New Password</label>
+        <input 
+          id="new-password" 
+          type="password" 
+          placeholder="Enter your new password"
+        >
+      </div>
+      <div class="form-group">
+        <label for="confirm-password">Confirm New Password</label>
+        <input 
+          id="confirm-password" 
+          type="password" 
+          placeholder="Confirm your new password"
+        >
+      </div>
+      <button class="change-password-btn">Change Password</button>
+    </div>
+  </div>
+
+  <div class="settings-actions">
+    <button class="reset-btn" (click)="resetSettings()">Reset to Default</button>
+    <button 
+      class="save-btn" 
+      (click)="saveSettings()" 
+      [disabled]="isSaving"
+    >
+      <i class="fas fa-spinner fa-spin" *ngIf="isSaving"></i>
+      <span *ngIf="!isSaving">Save Changes</span>
+      <span *ngIf="isSaving">Saving...</span>
+    </button>
+  </div>
+
+  <div class="alert success" *ngIf="saveSuccess">
+    <i class="fas fa-check-circle"></i>
+    <span>Settings saved successfully!</span>
+  </div>
+
+  <div class="alert error" *ngIf="saveError">
+    <i class="fas fa-exclamation-circle"></i>
+    <span>Failed to save settings. Please try again.</span>
+  </div>
+</div>
